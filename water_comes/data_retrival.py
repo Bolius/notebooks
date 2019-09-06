@@ -23,6 +23,8 @@ def convertEPSG(x, y):
 
 
 def boundingBox(x, y, boxSize=200):
+    if x < 1000 or y < 1000:
+        x, y = convertEPSG(x, y)
     minx = x - boxSize / 2
     miny = y - boxSize / 2
     maxx = x + boxSize / 2

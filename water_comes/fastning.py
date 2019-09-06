@@ -2,12 +2,12 @@ import requests
 from io import BytesIO
 from PIL import Image
 from pyproj import Transformer
-from data_retrival import boundingBox, convertEPSG
+from data_retrival import boundingBox, convertEPSG, getImg
 import numpy as np
 import pandas as pd
 
 
-def getFastningImg(x, y, imageSize=400):
+def getFastningImg(x, y, imageSize=800):
     x, y = convertEPSG(x, y)
     bbox = boundingBox(x, y)
     minX, minY, maxX, maxY = [float(coord) for coord in bbox.split(",")]
@@ -60,3 +60,30 @@ def imageToMatrix(img, size=25):
                 (fastningMapping - colMat[i][j]).abs().sum(axis=1).idxmin()
             )
     return pd.DataFrame(values)
+
+
+def mapImg(fatImg, x, y):
+    mapImg = getImg(x, y, "map", mode="RGB")
+    alpImg = fatImg.copy()
+    alpImg.putalpha(170)
+    mapImg.paste(alpImg, (0, 0), alpImg)
+    return mapImg
+
+
+def getFastning(x, y, base64=True):
+    fatImg = getFastningImg(x, y)
+    map = mapImg(fatImg, x, y)
+    df = imageToMatrix(fatImg)
+    buffered = BytesIO()
+    map.save(buffered, format="PNG")
+    w, _ = df.shape
+    step = w // 4
+
+    return {
+        "total_area_fastning": df.mean().mean(),
+        "image": base64.urlsafe_b64encode(buffered.getvalue()) if base64 else map,
+        "house_area_fastning": df[step : w - step]
+        .transpose()[step : w - step]
+        .mean()
+        .mean(),
+    }
