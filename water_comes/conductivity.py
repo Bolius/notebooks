@@ -2,11 +2,11 @@ import requests
 from io import BytesIO
 from PIL import Image
 from pyproj import Transformer
-from data_retrival import boundingBox, convertEPSG
+from data_retrival import boundingBox, convertEPSG, getImg
 import numpy as np
 import pandas as pd
 
-def getConductivityImg(x, y, imageSize=400):
+def getConductivityImg(x, y, imageSize=800):
     x, y = convertEPSG(x, y)
     bbox = boundingBox(x, y)
     minX, minY, maxX, maxY = [float(coord) for coord in bbox.split(",")]
@@ -34,3 +34,68 @@ def getConductivityImg(x, y, imageSize=400):
 
     img = Image.open(BytesIO(response.content))
     return img
+
+
+conductivityMapping = pd.DataFrame ({
+  "50": np.array([1, 44, 120, 255]),
+  "100": np.array([0, 64, 126, 255]),
+  "125": np.array([0, 79, 128, 255]),
+  "150": np.array([0, 100, 133, 255]),
+  "200": np.array([0, 118, 139, 255]),
+  "250": np.array([0, 138, 144, 255]),
+  "275": np.array([0, 150, 141, 255]),
+  "325": np.array([0, 161, 133, 255]),
+  "375": np.array([0, 171, 120, 255]),
+  "425": np.array([0, 181, 103, 255]),
+  "475": np.array([0, 195, 86, 255]),
+  "525": np.array([0, 205, 61, 255]),
+  "600": np.array([0, 215, 45, 255]),
+  "650": np.array([0, 223, 44, 255]),
+  "725": np.array([0, 228, 46, 255]),
+  "800": np.array([55, 233, 48, 255]),
+  "900": np.array([123, 241, 51, 255]),
+  "975": np.array([174, 247, 53, 255]),
+  "1075": np.array([226, 252, 56, 255]),
+  "1175": np.array([253, 246, 57, 255]),
+  "1300": np.array([253, 231, 54, 255]),
+  "1400": np.array([251, 214, 52, 255]),
+  "1550": np.array([251, 200, 50, 255]),
+  "1700": np.array([247, 182, 46, 255]),
+  "1850": np.array([245, 170, 46, 255]),
+  "2050": np.array([243, 158, 45, 255]),
+  "2200": np.array([236, 140, 47, 255]),
+  "2400": np.array([228, 124, 49, 255]),
+  "2650": np.array([224, 113, 52, 255]),
+  "2900": np.array([217, 101, 57, 255]),
+  "3350": np.array([204, 84, 64, 255]),
+}, index=["Red", "Green", "Blue", "Alpha"]).transpose()
+
+def imageToMatrix(img, size=25):
+    colMat = np.array(img.resize((size, size)))
+    values = np.zeros(shape=(colMat.shape[0], colMat.shape[1]))
+    for i in range(size):
+        for j in range(size):
+            values[i][j] = int(
+                (conductivityMapping - colMat[i][j]).abs().sum(axis=1).idxmin()
+            )
+    return pd.DataFrame(values)
+
+
+def mapImg(condImg, x, y):
+    mapImg = getImg(x, y, "map", mode="RGB")
+    alpImg = condImg.copy()
+    alpImg.putalpha(170)
+    mapImg.paste(alpImg, (0, 0), alpImg)
+    return mapImg
+
+
+def getConductivity(x, y, base64=True):
+    condImg = getConductivityImg(x, y)
+    map = mapImg(condImg, x, y)
+    buffered = BytesIO()
+    map.save(buffered, format="PNG")
+    return {
+        "total_area_conductivity": None,
+        "house_area_conductivity": None,
+        "image": base64.urlsafe_b64encode(buffered.getvalue()) if base64 else map
+    }
