@@ -92,10 +92,17 @@ def mapImg(condImg, x, y):
 def getConductivity(x, y, base64=True):
     condImg = getConductivityImg(x, y)
     map = mapImg(condImg, x, y)
+    df = imageToMatrix(condImg)
     buffered = BytesIO()
     map.save(buffered, format="PNG")
+    w, _ = df.shape
+    step = w // 4
+    
     return {
-        "total_area_conductivity": None,
-        "house_area_conductivity": None,
+        "total_area_conductivity": df.mean().mean(),
+        "house_area_conductivity": df[step : w - step]
+        .transpose()[step : w - step]
+        .mean()
+        .mean(),
         "image": base64.urlsafe_b64encode(buffered.getvalue()) if base64 else map
     }
