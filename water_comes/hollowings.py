@@ -11,6 +11,26 @@ from image_handling import (
 import numpy as np
 import base64
 from io import BytesIO
+from threading import Thread
+
+from time import time
+
+class ThreadValue(Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args,
+                                                **self._kwargs)
+    def join(self, *args):
+        Thread.join(self, *args)
+        return self._return
+
+def worker(s, x, y, mode=None):
+    """thread worker function"""
+    return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
 
 
 def addressToImages(address=None, x=None, y=None):
@@ -21,12 +41,24 @@ def addressToImages(address=None, x=None, y=None):
         x, y = addressToLatLong(address)
     x, y = convertEPSG(x, y)
 
-    # TODO run the three calls in parralel
-    return (
-        getImg(x, y, "buildings"),
-        getImg(x, y, "hollowings"),
-        getImg(x, y, "map", mode="RGB"),
+    t0 = ThreadValue(target=worker, args=("buildings", x, y))
+    t1 = ThreadValue(target=worker, args=("hollowings", x, y))
+    t2 = ThreadValue(target=worker, args=("map", x, y, "RGB"))
+
+    t0.start()
+    t1.start()
+    t2.start()
+
+    return(
+        t0.join(),
+        t1.join(),
+        t2.join()
     )
+    # return (
+    #     getImg(x, y, "buildings"),
+    #     getImg(x, y, "hollowings"),
+    #     getImg(x, y, "map", mode="RGB"),
+    # )
 
 
 def numberPixelHollowings(hollowImg, isolateImg):
@@ -84,20 +116,18 @@ def getHollowing(img, width=None):
 
 def getHollowingResponse(address=None, x=None, y=None):
     if address is None and (x is None or y is None):
-        return
+        raise Exception('No address given')
 
-    if address is not None:
-        building, hollow, map = addressToImages(address)
-    else:
-        building, hollow, map = addressToImages(x=x, y=y)
-
+    building, hollow, map = addressToImages(address) if address is not None else addressToImages(x=x, y=y)
     isolateBuild = isolateBuilding(building)
 
     binBuild = imageToBlackWhite(isolateBuild, retArray=True)
     binHollow = imageToBlackWhite(hollow, 10, True)
 
+    build = np.where(np.array(binHollow) == 1, np.array(binHollow), 255)
+    hollow = np.where(np.array(binBuild) == 1, np.array(binBuild), 255)
     combined = combineImages(
-        imageToBlackWhite(hollow, thresshold=10), imageToBlackWhite(isolateBuild)
+        hollow, build
     )
 
     img = prettyPng(map, isolateBuild, hollow, combined)
