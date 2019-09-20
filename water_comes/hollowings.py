@@ -1,3 +1,6 @@
+import os, sys
+
+sys.path.append(os.path.pardir)
 from data_retrival import addressToLatLong, convertEPSG, getImg
 from image_handling import (
     combineImages,

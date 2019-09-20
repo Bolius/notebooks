@@ -5,6 +5,7 @@ from pyproj import Transformer
 from data_retrival import boundingBox, convertEPSG, getImg
 import numpy as np
 import pandas as pd
+import base64
 
 
 def getFastningImg(x, y, imageSize=800):
@@ -70,7 +71,7 @@ def mapImg(fatImg, x, y):
     return mapImg
 
 
-def getFastning(x, y, base64=True):
+def getFastning(x, y, return_base64=True):
     fatImg = getFastningImg(x, y)
     map = mapImg(fatImg, x, y)
     df = imageToMatrix(fatImg)
@@ -81,7 +82,9 @@ def getFastning(x, y, base64=True):
 
     return {
         "total_area_fastning": df.mean().mean(),
-        "image": base64.urlsafe_b64encode(buffered.getvalue()) if base64 else map,
+        "image": base64.urlsafe_b64encode(buffered.getvalue())
+        if return_base64
+        else map,
         "house_area_fastning": df[step : w - step]
         .transpose()[step : w - step]
         .mean()
