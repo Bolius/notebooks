@@ -124,10 +124,10 @@ def getHollowingResponse(address=None, x=None, y=None):
     binBuild = imageToBlackWhite(isolateBuild, retArray=True)
     binHollow = imageToBlackWhite(hollow, 10, True)
 
-    h = np.where(np.array(binHollow) == 255, np.array(binHollow), 1)
-    b = np.where(np.array(binBuild) == 255, np.array(binBuild), 1)
+    build = np.where(np.array(binHollow) == 1, np.array(binHollow), 255)
+    hollow = np.where(np.array(binBuild) == 1, np.array(binBuild), 255)
     combined = combineImages(
-        h, b
+        hollow, build
     )
 
     img = prettyPng(map, isolateBuild, hollow, combined)
