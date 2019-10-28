@@ -1,5 +1,4 @@
 import os, sys
-
 sys.path.append(os.path.pardir)
 from data_retrival import addressToLatLong, convertEPSG, getImg
 from image_handling import (
@@ -12,7 +11,6 @@ import numpy as np
 import base64
 from io import BytesIO
 from threading import Thread
-
 from time import time
 
 class ThreadValue(Thread):
@@ -30,7 +28,7 @@ class ThreadValue(Thread):
 
 def worker(s, x, y, mode=None):
     """thread worker function"""
-    return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
+    return getImg(x, y, s, imageSize=500) if not mode else getImg(x, y, s, mode="RGB", imageSize=500)
 
 
 def addressToImages(address=None, x=None, y=None):
@@ -54,16 +52,10 @@ def addressToImages(address=None, x=None, y=None):
         t1.join(),
         t2.join()
     )
-    # return (
-    #     getImg(x, y, "buildings"),
-    #     getImg(x, y, "hollowings"),
-    #     getImg(x, y, "map", mode="RGB"),
-    # )
-
 
 def numberPixelHollowings(hollowImg, isolateImg):
     combined = combineImages(
-        imageToBlackWhite(hollowImg, thresshold=10), imageToBlackWhite(isolateImg)
+        imageToBlackWhite(hollowImg, threshold=10), imageToBlackWhite(isolateImg)
     )
     return np.asarray(imageToBlackWhite(combined)).sum()
 
@@ -76,7 +68,7 @@ def prettyPng(mapImg, isolateImg, hollowImg, combined):
     )
     mapImg.paste(houseImg, (0, 0), houseImg)
     hollowImg = replaceColor(
-        imageToBlackWhite(hollowImg, thresshold=10).convert("RGBA"),
+        imageToBlackWhite(hollowImg, threshold=10).convert("RGBA"),
         (255, 255, 255, 255),
         (1, 1, 128, 128),
     )
@@ -94,7 +86,7 @@ def checkHollowing(address):
     buildImg, hollowImg, mapImg = addressToImages(address)
     isolateImg = isolateBuilding(buildImg)
     combined = combineImages(
-        imageToBlackWhite(hollowImg, thresshold=10), imageToBlackWhite(isolateImg)
+        imageToBlackWhite(hollowImg, threshold=10), imageToBlackWhite(isolateImg)
     )
     numberPixels = numberPixelHollowings(hollowImg, isolateImg)
     img = prettyPng(mapImg, isolateImg, hollowImg, combined)
@@ -113,24 +105,32 @@ def getHollowing(img, width=None):
 
     return np.sum(img[minx:maxx, miny:maxy]) / ((x - width) * (y - width))
 
-
 def getHollowingResponse(address=None, x=None, y=None):
     if address is None and (x is None or y is None):
         raise Exception('No address given')
 
+    #start = time()
     building, hollow, map = addressToImages(address) if address is not None else addressToImages(x=x, y=y)
+    #print(f'addressToImages: {time()-start}')
+
+    #start = time()
     isolateBuild = isolateBuilding(building)
+    #print(f'isolateBuilding: {time() - start}')
 
     binBuild = imageToBlackWhite(isolateBuild, retArray=True)
     binHollow = imageToBlackWhite(hollow, 10, True)
 
-    build = np.where(np.array(binHollow) == 1, np.array(binHollow), 255)
-    hollow = np.where(np.array(binBuild) == 1, np.array(binBuild), 255)
+    build = np.where(np.array(binBuild) == 1, np.array(binBuild), 255)
+    hollow = np.where(np.array(binHollow) == 1, np.array(binHollow), 255)
+
+    #start = time()
     combined = combineImages(
         hollow, build
     )
+    #print(f'combineImages: {time()-start}')
 
     img = prettyPng(map, isolateBuild, hollow, combined)
+
     buffered = BytesIO()
     img.save(buffered, format="PNG")
 
@@ -138,6 +138,6 @@ def getHollowingResponse(address=None, x=None, y=None):
         "house_percentage": round(
             np.sum(np.bitwise_and(binBuild, binHollow)) / np.sum(binBuild) * 100, 2
         ),
-        "area_percentage": round(getHollowing(binHollow, 400) * 100, 2),
+        "area_percentage": round(getHollowing(binHollow, binHollow.shape[0]/2) * 100, 2),
         "image": base64.urlsafe_b64encode(buffered.getvalue()),
     }
