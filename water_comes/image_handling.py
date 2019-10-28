@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from PIL import Image
 
 
@@ -31,18 +30,18 @@ def isolateBuilding(buildImg):
     return Image.fromarray(arr)
 
 
-def imageToBlackWhite(img, thresshold=255, retArray=False):
-    df = pd.DataFrame(np.asarray(img).copy())
-    df[df < thresshold] = 0
+def imageToBlackWhite(img, threshold=255, retArray=False):
+    df = np.asarray(img).copy()
+    df[df < threshold] = 0
     df[df > 0] = 255 if not retArray else 1
-    return Image.fromarray(df.values).convert("1") if not retArray else np.array(df)
+    return Image.fromarray(df).convert("1") if not retArray else np.array(df)
 
 
 def combineImages(img1, img2):
-    img1 = pd.DataFrame(np.asarray(img1).copy()) * 85
-    img2 = pd.DataFrame(np.asarray(img2).copy()) * 170
+    img1 = np.asarray(img1).copy() * 85
+    img2 = np.asarray(img2).copy() * 170
     combined = (img1 + img2).astype(float)
-    return Image.fromarray(combined.values).convert("L")
+    return Image.fromarray(combined).convert("L")
 
 
 def replaceColor(img, original, new):
