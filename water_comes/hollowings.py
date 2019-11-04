@@ -104,30 +104,24 @@ def getHollowing(img, width=None):
     maxy = int(y / 2 + width / 2)
 
     return np.sum(img[minx:maxx, miny:maxy]) / ((x - width) * (y - width))
-
+import matplotlib.pyplot as plt
 def getHollowingResponse(address=None, x=None, y=None):
     if address is None and (x is None or y is None):
         raise Exception('No address given')
 
-    #start = time()
     building, hollow, map = addressToImages(address) if address is not None else addressToImages(x=x, y=y)
-    #print(f'addressToImages: {time()-start}')
 
-    #start = time()
     isolateBuild = isolateBuilding(building)
-    #print(f'isolateBuilding: {time() - start}')
 
     binBuild = imageToBlackWhite(isolateBuild, retArray=True)
     binHollow = imageToBlackWhite(hollow, 10, True)
 
-    build = np.where(np.array(binBuild) == 1, np.array(binBuild), 255)
-    hollow = np.where(np.array(binHollow) == 1, np.array(binHollow), 255)
+    build = np.where(np.array(binBuild) == 0, np.array(binBuild), 255)
+    hollow = np.where(np.array(binHollow) == 0, np.array(binHollow), 255)
 
-    #start = time()
     combined = combineImages(
         hollow, build
     )
-    #print(f'combineImages: {time()-start}')
 
     img = prettyPng(map, isolateBuild, hollow, combined)
 
@@ -139,5 +133,5 @@ def getHollowingResponse(address=None, x=None, y=None):
             np.sum(np.bitwise_and(binBuild, binHollow)) / np.sum(binBuild) * 100, 2
         ),
         "area_percentage": round(getHollowing(binHollow, binHollow.shape[0]/2) * 100, 2),
-        "image": base64.urlsafe_b64encode(buffered.getvalue()),
+        "image": base64.b64encode(buffered.getvalue()),
     }

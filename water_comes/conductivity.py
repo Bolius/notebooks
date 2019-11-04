@@ -117,9 +117,6 @@ def imageToMatrix(img, size=25):
     for i in range(size):
         for j in range(size):
             values[i][j] = np.argmin(np.sum(np.abs(conductivityMapping_ - colMat[i][j]), axis=1))
-            # values[i][j] = int(
-            #     (conductivityMapping - colMat[i][j]).abs().sum(axis=1).idxmin()
-            # )
     return values
 
 
@@ -146,7 +143,7 @@ def getConductivity(x, y, return_base64=True):
         .transpose()[step : w - step]
         .mean()
         .mean(),
-        "image": base64.urlsafe_b64encode(buffered.getvalue())
+        "image": base64.b64encode(buffered.getvalue())
         if return_base64
         else map,
     }
