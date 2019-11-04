@@ -108,7 +108,7 @@ def getFastning(x, y, return_base64=True):
 
     return {
         "total_area_fastning": np.mean(df),
-        "image": base64.urlsafe_b64encode(buffered.getvalue())
+        "image": base64.b64encode(buffered.getvalue())
         if return_base64
         else map,
         "house_area_fastning": df[step : w - step]
