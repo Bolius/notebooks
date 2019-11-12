@@ -8,7 +8,7 @@ import pandas as pd
 import base64
 from time import time
 
-def getFastningImg(x, y, imageSize=800):
+def getFastningImg(x, y, imageSize=400):
     x, y = convertEPSG(x, y)
     bbox = boundingBox(x, y)
     minX, minY, maxX, maxY = [float(coord) for coord in bbox.split(",")]
