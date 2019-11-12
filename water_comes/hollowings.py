@@ -8,7 +8,6 @@ from image_handling import (
     isolateBuilding,
     replaceColor,
 )
-import matplotlib.pyplot as plt
 import numpy as np
 import base64
 from io import BytesIO
@@ -35,9 +34,9 @@ class ThreadValue(Thread):
 def worker(s, x, y, mode=None):
     """thread worker function"""
     return (
-        getImg(x, y, s, imageSize=500)
+        getImg(x, y, s)
         if not mode
-        else getImg(x, y, s, mode="RGB", imageSize=500)
+        else getImg(x, y, s, mode="RGB")
     )
 
     return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
