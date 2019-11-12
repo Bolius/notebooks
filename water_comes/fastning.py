@@ -8,6 +8,7 @@ import pandas as pd
 import base64
 from time import time
 
+
 def getFastningImg(x, y, imageSize=800):
     x, y = convertEPSG(x, y)
     bbox = boundingBox(x, y)
@@ -53,28 +54,30 @@ def getFastningImg(x, y, imageSize=800):
 
 
 fastningMapping_ = np.array(
-                        [[207, 20, 22, 255],
-                         [212, 42, 35, 255],
-                         [220, 67, 53, 255],
-                         [224, 95, 73, 255],
-                         [232, 121, 94, 255],
-                         [236, 145, 114, 255],
-                         [242, 170, 139, 255],
-                         [246, 193, 163, 255],
-                         [255, 236, 215, 255]
-                        ])
+    [
+        [207, 20, 22, 255],
+        [212, 42, 35, 255],
+        [220, 67, 53, 255],
+        [224, 95, 73, 255],
+        [232, 121, 94, 255],
+        [236, 145, 114, 255],
+        [242, 170, 139, 255],
+        [246, 193, 163, 255],
+        [255, 236, 215, 255],
+    ]
+)
 
 val_map = {
-    "0" : 100,
-    "1" : 80,
-    "2" : 70,
-    "3" : 60,
-    "4" : 50,
-    "5" : 40,
-    "6" : 30,
-    "7" : 20,
-    "8" : 10,
-    "9" : 0
+    "0": 100,
+    "1": 80,
+    "2": 70,
+    "3": 60,
+    "4": 50,
+    "5": 40,
+    "6": 30,
+    "7": 20,
+    "8": 10,
+    "9": 0,
 }
 
 
@@ -83,7 +86,9 @@ def imageToMatrix(img, size=25):
     values = np.zeros(shape=(colMat.shape[0], colMat.shape[1]))
     for i in range(size):
         for j in range(size):
-            values[i][j] = val_map.get(str(np.argmin(np.sum(np.abs(fastningMapping_ - colMat[i][j]), axis=1))))
+            values[i][j] = val_map.get(
+                str(np.argmin(np.sum(np.abs(fastningMapping_ - colMat[i][j]), axis=1)))
+            )
 
     return values
 
@@ -108,9 +113,7 @@ def getFastning(x, y, return_base64=True):
 
     return {
         "total_area_fastning": np.mean(df),
-        "image": base64.b64encode(buffered.getvalue())
-        if return_base64
-        else map,
+        "image": base64.b64encode(buffered.getvalue()) if return_base64 else map,
         "house_area_fastning": df[step : w - step]
         .transpose()[step : w - step]
         .mean()
