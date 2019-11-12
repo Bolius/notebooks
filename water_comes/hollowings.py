@@ -1,4 +1,5 @@
 import os, sys
+
 sys.path.append(os.path.pardir)
 from data_retrival import addressToLatLong, convertEPSG, getImg
 from image_handling import (
@@ -7,28 +8,40 @@ from image_handling import (
     isolateBuilding,
     replaceColor,
 )
+import matplotlib.pyplot as plt
 import numpy as np
 import base64
 from io import BytesIO
 from threading import Thread
 from time import time
 
+
 class ThreadValue(Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs={}, Verbose=None):
+    def __init__(
+        self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None
+    ):
         Thread.__init__(self, group, target, name, args, kwargs)
         self._return = None
+
     def run(self):
         if self._target is not None:
-            self._return = self._target(*self._args,
-                                                **self._kwargs)
+            self._return = self._target(*self._args, **self._kwargs)
+
     def join(self, *args):
         Thread.join(self, *args)
         return self._return
 
+
 def worker(s, x, y, mode=None):
     """thread worker function"""
+    return (
+        getImg(x, y, s, imageSize=500)
+        if not mode
+        else getImg(x, y, s, mode="RGB", imageSize=500)
+    )
+
     return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
+
 
 
 def addressToImages(address=None, x=None, y=None):
@@ -47,11 +60,8 @@ def addressToImages(address=None, x=None, y=None):
     t1.start()
     t2.start()
 
-    return(
-        t0.join(),
-        t1.join(),
-        t2.join()
-    )
+    return (t0.join(), t1.join(), t2.join())
+
 
 def numberPixelHollowings(hollowImg, isolateImg):
     combined = combineImages(
@@ -105,11 +115,14 @@ def getHollowing(img, width=None):
 
     return np.sum(img[minx:maxx, miny:maxy]) / ((x - width) * (y - width))
 
+
 def getHollowingResponse(address=None, x=None, y=None):
     if address is None and (x is None or y is None):
-        raise Exception('No address given')
+        raise Exception("No address given")
 
-    building, hollow, map = addressToImages(address) if address is not None else addressToImages(x=x, y=y)
+    building, hollow, map = (
+        addressToImages(address) if address is not None else addressToImages(x=x, y=y)
+    )
 
     isolateBuild = isolateBuilding(building)
 
@@ -119,9 +132,7 @@ def getHollowingResponse(address=None, x=None, y=None):
     build = np.where(np.array(binBuild) == 0, np.array(binBuild), 255)
     hollow = np.where(np.array(binHollow) == 0, np.array(binHollow), 255)
 
-    combined = combineImages(
-        hollow, build
-    )
+    combined = combineImages(hollow, build)
 
     img = prettyPng(map, isolateBuild, hollow, combined)
 
@@ -132,6 +143,8 @@ def getHollowingResponse(address=None, x=None, y=None):
         "house_percentage": round(
             np.sum(np.bitwise_and(binBuild, binHollow)) / np.sum(binBuild) * 100, 2
         ),
-        "area_percentage": round(getHollowing(binHollow, binHollow.shape[0]/2) * 100, 2),
+        "area_percentage": round(
+            getHollowing(binHollow, binHollow.shape[0] / 2) * 100, 2
+        ),
         "image": base64.b64encode(buffered.getvalue()),
     }
