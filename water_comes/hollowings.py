@@ -28,7 +28,7 @@ class ThreadValue(Thread):
 
 def worker(s, x, y, mode=None):
     """thread worker function"""
-    return getImg(x, y, s, imageSize=500) if not mode else getImg(x, y, s, mode="RGB", imageSize=500)
+    return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
 
 
 def addressToImages(address=None, x=None, y=None):
@@ -104,7 +104,7 @@ def getHollowing(img, width=None):
     maxy = int(y / 2 + width / 2)
 
     return np.sum(img[minx:maxx, miny:maxy]) / ((x - width) * (y - width))
-import matplotlib.pyplot as plt
+
 def getHollowingResponse(address=None, x=None, y=None):
     if address is None and (x is None or y is None):
         raise Exception('No address given')

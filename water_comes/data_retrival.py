@@ -32,7 +32,7 @@ def boundingBox(x, y, boxSize=200):
     return f"{minx},{miny},{maxx},{maxy}"
 
 
-def getImg(x, y, feature, mode="L", imageSize=800):
+def getImg(x, y, feature, mode="L", imageSize=400):
     user, password = os.environ["KORTFORSYNINGEN"].split("@")
     params = {
         "service": "WMS",
