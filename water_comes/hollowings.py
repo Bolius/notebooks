@@ -40,6 +40,9 @@ def worker(s, x, y, mode=None):
         else getImg(x, y, s, mode="RGB", imageSize=500)
     )
 
+    return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
+
+
 
 def addressToImages(address=None, x=None, y=None):
     if address is None and (x is None or y is None):

@@ -9,7 +9,7 @@ import base64
 from time import time
 
 
-def getFastningImg(x, y, imageSize=800):
+def getFastningImg(x, y, imageSize=400):
     x, y = convertEPSG(x, y)
     bbox = boundingBox(x, y)
     minX, minY, maxX, maxY = [float(coord) for coord in bbox.split(",")]
@@ -35,22 +35,6 @@ def getFastningImg(x, y, imageSize=800):
     )
     img = Image.open(BytesIO(response.content))
     return img
-
-
-# fastningMapping = pd.DataFrame(
-#     {
-#         "100": np.array([207, 20, 22, 255]),
-#         "80": np.array([212, 42, 35, 255]),
-#         "70": np.array([220, 67, 53, 255]),
-#         "60": np.array([224, 95, 73, 255]),
-#         "50": np.array([232, 121, 94, 255]),
-#         "35": np.array([236, 145, 114, 255]),
-#         "20": np.array([242, 170, 139, 255]),
-#         "10": np.array([246, 193, 163, 255]),
-#         "0": np.array([255, 236, 215, 255]),
-#     },
-#     index=["Red", "Green", "Blue", "Alpha"],
-# ).transpose()
 
 
 fastningMapping_ = np.array(
