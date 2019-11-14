@@ -43,7 +43,6 @@ def worker(s, x, y, mode=None):
     return getImg(x, y, s) if not mode else getImg(x, y, s, mode="RGB")
 
 
-
 def addressToImages(address=None, x=None, y=None):
     if address is None and (x is None or y is None):
         raise ValueError("No input specified")
@@ -138,11 +137,12 @@ def getHollowingResponse(address=None, x=None, y=None):
 
     buffered = BytesIO()
     img.save(buffered, format="PNG")
-
+    house_percentage = round(
+        np.sum(np.bitwise_and(binBuild, binHollow)) / np.sum(binBuild) * 100, 2
+    )
     return {
-        "house_percentage": round(
-            np.sum(np.bitwise_and(binBuild, binHollow)) / np.sum(binBuild) * 100, 2
-        ),
+        "house_percentage": house_percentage,
+        "risk": "high" if house_percentage > 5 else "low",
         "area_percentage": round(
             getHollowing(binHollow, binHollow.shape[0] / 2) * 100, 2
         ),

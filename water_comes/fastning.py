@@ -86,6 +86,7 @@ def mapImg(fatImg, x, y):
 
 
 def getFastning(x, y, return_base64=True):
+    limits = {"low": 40, "medium": 50}
     fatImg = getFastningImg(x, y)
     map = mapImg(fatImg, x, y)
     df = imageToMatrix(fatImg)
@@ -94,12 +95,17 @@ def getFastning(x, y, return_base64=True):
     map.save(buffered, format="PNG")
     w, _ = df.shape
     step = w // 4
-
+    house_area_fastning = df[step : w - step].transpose()[step : w - step].mean().mean()
+    print(house_area_fastning)
+    if house_area_fastning < limits["low"]:
+        risk = "low"
+    elif house_area_fastning < limits["medium"]:
+        risk = "medium"
+    else:
+        risk = "high"
     return {
         "total_area_fastning": np.mean(df),
+        "risk": risk,
         "image": base64.b64encode(buffered.getvalue()) if return_base64 else map,
-        "house_area_fastning": df[step : w - step]
-        .transpose()[step : w - step]
-        .mean()
-        .mean(),
+        "house_area_fastning": house_area_fastning,
     }

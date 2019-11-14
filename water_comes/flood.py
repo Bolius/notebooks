@@ -60,18 +60,20 @@ def getGroundHeight(x, y):
     return np.round(response.json()["hoejde"], decimals=1)
 
 
+def isFlooded(x, y, limit):
+    percentage = computeFloodPecentage(getFloodImg(x, y, depth=limit))
+    return percentage > 0.1
+
+
 def getRisks(x, y):
     result = {
-        "high_limit": 400,
-        "medium_limit": 300,
-        "low_limit": 200,
+        "medium_limit": 190,
+        "low_limit": 140,
         "ground_height": getGroundHeight(x, y),
         "risk": "low",
     }
-    if result["low_limit"] / 100 >= result["ground_height"]:
-        flood = computeFloodPecentage(getFloodImg(x, y, depth=result["low_limit"]))
-        result["risk"] = "high" if flood > 0.1 else result["risk"]
-    elif result["medium_limit"] / 100 >= result["ground_height"]:
-        flood = computeFloodPecentage(getFloodImg(x, y, depth=result["medium_limit"]))
-        result["risk"] = "medium" if flood > 0.1 else result["risk"]
+    if isFlooded(x, y, result["low_limit"]):
+        result["risk"] = "high"
+    elif isFlooded(x, y, result["medium_limit"]):
+        result["risk"] = "medium"
     return result
