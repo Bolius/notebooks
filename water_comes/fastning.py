@@ -86,7 +86,7 @@ def mapImg(fatImg, x, y):
 
 
 def getFastning(x, y, return_base64=True):
-    limits = {"low": 40, "medium": 50}
+    limits = {"low": 35, "medium": 50}
     fatImg = getFastningImg(x, y)
     map = mapImg(fatImg, x, y)
     df = imageToMatrix(fatImg)

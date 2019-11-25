@@ -81,7 +81,7 @@ conductivityMapping = pd.DataFrame(
 
 
 def getConductivity(x, y):
-    limits = {"low": 1000, "medium": 1500}
+    limits = {"low": 150, "medium": 350}
     color = getConductivityColor(x, y)
     value = int((conductivityMapping - color).abs().sum(axis="columns").idxmin())
     if value < limits["low"]:

@@ -74,6 +74,7 @@ def getRisks(x, y):
     }
     if isFlooded(x, y, result["low_limit"]):
         result["risk"] = "high"
+
     elif isFlooded(x, y, result["medium_limit"]):
         result["risk"] = "medium"
     return result
