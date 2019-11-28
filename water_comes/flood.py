@@ -10,7 +10,7 @@ from time import time
 import os
 
 
-def getFloodImg(x, y, imageSize=100, depth=200):
+def getFloodImg(x, y, imageSize=400, depth=200):
     x, y = convertEPSG(x, y)
     bbox = boundingBox(x, y)
     minX, minY, maxX, maxY = [float(coord) for coord in bbox.split(",")]
@@ -64,13 +64,22 @@ def isFlooded(x, y, limit):
     percentage = computeFloodPecentage(getFloodImg(x, y, depth=limit))
     return percentage > 0.1
 
+def mapImg(Img, x, y):
+    mapImg = getImg(x, y, "map", mode="RGB")
+    alpImg = Img.copy()
+    alpImg.putalpha(170)
+    mapImg.paste(Img, (0, 0), alpImg)
+    return mapImg
+
 
 def getRisks(x, y):
+
     result = {
         "medium_limit": 190,
         "low_limit": 140,
         "ground_height": getGroundHeight(x, y),
         "risk": "low",
+        "image": mapImg(getFloodImg(x, y), x, y),  
     }
     if isFlooded(x, y, result["low_limit"]):
         result["risk"] = "high"
