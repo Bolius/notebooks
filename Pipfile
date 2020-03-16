@@ -14,7 +14,7 @@ matplotlib = "*"
 [packages]
 pyproj = "~=2.4.2.post1"
 pillow = "~=7.0.0"
-pandas = "~=1.0.1"
+pandas = "~=1.0.2"
 requests = "~=2.22.0"
 tqdm = "~=4.43.0"
 sentry-sdk = "~=0.14.2"
