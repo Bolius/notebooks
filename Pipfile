@@ -18,7 +18,7 @@ pandas = "~=1.0.1"
 requests = "~=2.22.0"
 tqdm = "~=4.43.0"
 sentry-sdk = "~=0.14.2"
-numpy = "~=1.18.1"
+numpy = "~=1.18.2"
 
 [requires]
 python_version = "3.8"
