@@ -12,7 +12,7 @@ aiohttp = "*"
 matplotlib = "*"
 
 [packages]
-pyproj = "~=2.6.0"
+pyproj = "~=2.6.1"
 pillow = "~=7.1.2"
 pandas = "~=1.0.3"
 requests = "~=2.22.0"
