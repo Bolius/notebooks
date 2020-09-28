@@ -16,7 +16,7 @@ pyproj = "~=2.6.1"
 pillow = "~=7.2.0"
 pandas = "~=1.1.0"
 requests = "~=2.24.0"
-tqdm = "~=4.48.2"
+tqdm = "~=4.50.0"
 sentry-sdk = "~=0.16.5"
 numpy = "~=1.19.1"
 
