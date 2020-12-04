@@ -54,9 +54,9 @@ def get_rain_risk_response(address_id, coordinates):
 
 
 def determine_rain_risk(factors):
-    """ These rules were determined by the subject experts at Bolius. The
+    """These rules were determined by the subject experts at Bolius. The
     relationship between the factors is complex and sadly requires a bunch of
-    if statements. """
+    if statements."""
     # Helper functions
     is_low = lambda factor: factors[factor]["risk"] == "low"  # noqa: E731
     is_high = lambda factor: factors[factor]["risk"] == "high"  # noqa: E731

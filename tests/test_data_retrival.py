@@ -1,4 +1,5 @@
 import unittest
+import imagehash
 from code.lib import (
     address_to_house_data,
     bbr_id_to_house_data,
@@ -53,10 +54,12 @@ class TestDataRetrieval(unittest.TestCase):
     def test_get_satelite_img(self):
         data = address_to_house_data("Jarmers Pl. 2, 1551 København")
         actual_image = get_satelite_img(data["coordinates"])
+        actual_hash = imagehash.average_hash(actual_image)
         expected_image = Image.open(
             path.join("tests", "test_images", "get_img_map.png")
         ).convert("RGB")
-        self.assertEqual(actual_image, expected_image)
+        expected_hash = imagehash.average_hash(expected_image)
+        self.assertEqual(actual_hash, expected_hash)
 
 
 if __name__ == "__main__":

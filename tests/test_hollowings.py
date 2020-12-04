@@ -1,7 +1,7 @@
 import base64
 import unittest
+import imagehash
 from code.lib import (
-    IMAGE_SIZE,
     address_to_house_data,
     coordinates_to_holllowing_images,
     generate_image_summary,
@@ -22,12 +22,13 @@ class TestHollowings(unittest.TestCase):
             "coordinates"
         ]
         actual_image = get_hollowing_img(office_address, "buildings")
-        expected_image = (
-            Image.open(
-                path.join("tests", "test_images", "get_img_buildings.png")
-            ).convert("L")
-        ).resize((IMAGE_SIZE, IMAGE_SIZE))
-        self.assertEqual(actual_image, expected_image)
+        expected_image = Image.open(
+            path.join("tests", "test_images", "get_img_buildings.png")
+        ).convert("L")
+
+        actual_hash = imagehash.average_hash(actual_image)
+        expected_hash = imagehash.average_hash(expected_image)
+        self.assertEqual(actual_hash, expected_hash)
 
     def test_get_img_hollowings(self):
         office_address = address_to_house_data("Jarmers Pl. 2, 1551 København")[
@@ -52,7 +53,9 @@ class TestHollowings(unittest.TestCase):
                 path.join("tests", "test_images", "get_img_hollowings.png")
             ).convert("L"),
         ]
-        self.assertEqual(actual_images, expected_images)
+        actual_hashes = [imagehash.average_hash(img) for img in actual_images]
+        expected_hashes = [imagehash.average_hash(img) for img in expected_images]
+        self.assertEqual(actual_hashes, expected_hashes)
 
     def test_house_percentage_hollowing(self):
         imgSize = (100, 100)
@@ -90,13 +93,14 @@ class TestHollowings(unittest.TestCase):
             "coordinates"
         ]
         resp = get_hollowing_response(office_address)
-        actual_image = np.asarray(Image.open(BytesIO(base64.b64decode(resp["image"]))))
-        expected_image = np.asarray(
-            Image.open(
-                path.join("tests", "test_images", "jarmars_hollwing_response.png")
-            ).convert("RGB")
-        )
-        self.assertTrue(np.allclose(actual_image, expected_image, atol=1))
+        actual_image = Image.open(BytesIO(base64.b64decode(resp["image"])))
+        expected_image = Image.open(
+            path.join("tests", "test_images", "jarmars_hollwing_response.png")
+        ).convert("RGB")
+
+        actual_hash = imagehash.average_hash(actual_image)
+        expected_hash = imagehash.average_hash(expected_image)
+        self.assertTrue(actual_hash, expected_hash)
         resp.pop("image")
         self.assertAlmostEqual(resp["house_percentage"], 0.19)
         self.assertAlmostEqual(resp["area_percentage"], 6.83)

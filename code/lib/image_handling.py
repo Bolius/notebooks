@@ -7,7 +7,7 @@ def greyscale_to_binary_image(img, thresshold=127):
 
 
 def isolate_building(buildImg):
-    """ Given a greyscale image centered on a shape it returns a binary image of
+    """Given a greyscale image centered on a shape it returns a binary image of
     only the shape.
     """
     if buildImg.mode != "L":
