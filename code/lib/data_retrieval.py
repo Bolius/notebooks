@@ -27,7 +27,9 @@ def address_to_house_data(address):
 
 def bbr_id_to_house_data(bbr_id):
     response = requests.request(
-        "GET", f"https://dawa.aws.dk/adresser/{bbr_id}", params={"struktur": "mini"},
+        "GET",
+        f"https://dawa.aws.dk/adresser/{bbr_id}",
+        params={"struktur": "mini"},
     )
     if response.status_code != 200:
         raise ValueError(f"Invalid BBR_ID: {bbr_id}")
