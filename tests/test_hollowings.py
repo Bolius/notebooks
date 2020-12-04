@@ -2,7 +2,6 @@ import base64
 import unittest
 import imagehash
 from code.lib import (
-    IMAGE_SIZE,
     address_to_house_data,
     coordinates_to_holllowing_images,
     generate_image_summary,
@@ -100,7 +99,7 @@ class TestHollowings(unittest.TestCase):
         ).convert("RGB")
 
         actual_hash = imagehash.average_hash(actual_image)
-        expected_hash = imagehash.average_hash(actual_image)
+        expected_hash = imagehash.average_hash(expected_image)
         self.assertTrue(actual_hash, expected_hash)
         resp.pop("image")
         self.assertAlmostEqual(resp["house_percentage"], 0.19)

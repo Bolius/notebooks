@@ -10,7 +10,7 @@ from code.lib import (
 from io import BytesIO
 from os import path
 
-import numpy as np
+
 from PIL import Image
 
 
