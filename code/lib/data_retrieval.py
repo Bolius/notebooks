@@ -7,6 +7,7 @@ from pyproj import Transformer
 
 from .config import IMAGE_SIZE
 
+
 def address_to_house_data(address):
     response = requests.request(
         "GET",
@@ -79,20 +80,24 @@ def bounding_box(coordinates, ESPG=None, boxSize=200):
 def get_satelite_img(coordinates, imageSize=IMAGE_SIZE):
     user, password = os.environ["DATAFORDELEREN"].split("@")
     params = {
-        "username" : user,
-        "password" : password,
-        "request" : "GetMap",
-        "CRS" : "EPSG:3857",
-        "SRS" : "EPSG:3857",
-        "styles" : "default",
-        "VERSION" : "1.1.1",
-        "FORMAT" : "image/png",
-        "LAYERS" : "orto_foraar",
+        "username": user,
+        "password": password,
+        "request": "GetMap",
+        "CRS": "EPSG:3857",
+        "SRS": "EPSG:3857",
+        "styles": "default",
+        "VERSION": "1.1.1",
+        "FORMAT": "image/png",
+        "LAYERS": "orto_foraar",
         "BBOX": bounding_box(coordinates, ESPG="3857"),
         "WIDTH": str(imageSize),
         "HEIGHT": str(imageSize),
     }
-    response = requests.request("GET", "https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS?", params=params)
+    response = requests.request(
+        "GET",
+        "https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS?",
+        params=params,
+    )
     img = Image.open(BytesIO(response.content))
 
     return img.convert("RGB")
