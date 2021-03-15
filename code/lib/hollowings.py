@@ -13,11 +13,10 @@ from .image_handling import greyscale_to_binary_image, isolate_building
 
 
 def get_hollowing_img(coordinates, feature, imageSize=IMAGE_SIZE):
-    user, password = os.environ["KORTFORSYNINGEN"].split("@")
     params = {
+        "request": "GetMap",
         "service": "WMS",
-        "login": user,
-        "password": password,
+        "token": os.environ["DATAFORSYNINGEN"],
         "TRANSPARENT": "True",
         "VERSION": "1.1.1",
         "REQUEST": "GetMap",
@@ -37,8 +36,9 @@ def get_hollowing_img(coordinates, feature, imageSize=IMAGE_SIZE):
         params["STYLES"] = "bluespot_ekstremregn_0_015"
     else:
         raise ValueError("Invalid feature")
-
-    response = requests.request("GET", "https://kortforsyningen.kms.dk/", params=params)
+    response = requests.request(
+        "GET", "https://api.dataforsyningen.dk/service?", params=params
+    )
     img = Image.open(BytesIO(response.content))
     return img.convert("L")
 

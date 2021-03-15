@@ -78,24 +78,28 @@ def bounding_box(coordinates, ESPG=None, boxSize=200):
 
 
 def get_satelite_img(coordinates, imageSize=IMAGE_SIZE):
-    user, password = os.environ["KORTFORSYNINGEN"].split("@")
+    user, password = os.environ["DATAFORDELEREN"].split("@")
     params = {
-        "service": "WMS",
-        "login": user,
+        "username": user,
         "password": password,
-        "TRANSPARENT": "True",
-        "VERSION": "1.1.1",
-        "REQUEST": "GetMap",
-        "FORMAT": "image/png",
+        "request": "GetMap",
+        "CRS": "EPSG:3857",
         "SRS": "EPSG:3857",
+        "styles": "default",
+        "VERSION": "1.1.1",
+        "FORMAT": "image/png",
+        "LAYERS": "orto_foraar",
         "BBOX": bounding_box(coordinates, ESPG="3857"),
         "WIDTH": str(imageSize),
         "HEIGHT": str(imageSize),
-        "servicename": ("orto_foraar",),
-        "LAYERS": "orto_foraar",
     }
-    response = requests.request("GET", "https://kortforsyningen.kms.dk/", params=params)
+    response = requests.request(
+        "GET",
+        "https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS?",
+        params=params,
+    )
     img = Image.open(BytesIO(response.content))
+
     return img.convert("RGB")
 
 
