@@ -2,7 +2,7 @@
 
 This repo contains a model that given a longitude, latitude pair returns the
 risk that flooding will occur at the address. We compute two types of flood risk:
-The data used comes from [_kortforsyningen_][kortforsyningen] and the
+The data used comes from [_dataforsyningen_][dataforsyningen],[_datafordeler_][datafordeler] and the
 [danish environment ministry][miljoegis]
 
 #### Cloudburst
@@ -61,7 +61,7 @@ see the install section in it's readme.
 
 Before activating a pipenv shell a `.env` file should exists, copy the
 `.env.example` to `.env` and fill out the variables. Creating credentials for
-kortforsyningen is free.
+Datafordeleren and Dataforsyningen is free.
 
 To run the model start pipenv and run `jupyter notebook` from the project root.
 See the notebook to read more about the models and see them in action.
@@ -87,6 +87,10 @@ presents this model as a webpage.
 <!-- Links -->
 
 [kortforsyningen]: https://download.kortforsyningen.dk/content/geodataprodukter
+
+[dataforsyningen] : https://dataforsyningen.dk/
+
+[datafordeler] : https://datafordeler.dk/
 
 [miljoegis]: https://www.klimatilpasning.dk/kommuner/kortlaegning/data-til-kortlaegning/
 

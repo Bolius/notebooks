@@ -19,14 +19,16 @@ jobs:
       - name: Run tests
         run: python -m unittest
         env:
-          KORTFORSYNINGEN: ${{ secrets.KORTFORSYNINGEN }}
           GEO_KEY: ${{ secrets.GEO_KEY }}
+          DATAFORDELEREN: ${{ secrets.DATAFORDELEREN}}
+          DATAFORSYNINGEN: ${{ secrets.DATAFORSYNINGEN}}
 
       - name: Creating coverage
         run: coverage run --source=. -m unittest
         env:
-          KORTFORSYNINGEN: ${{ secrets.KORTFORSYNINGEN }}
           GEO_KEY: ${{ secrets.GEO_KEY }}
+          DATAFORDELEREN: ${{ secrets.DATAFORDELEREN}}
+          DATAFORSYNINGEN: ${{ secrets.DATAFORSYNINGEN}}
 
       - name: Uploading Coverage
         run: coveralls
