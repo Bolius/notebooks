@@ -17,7 +17,7 @@ Resources:
 
       CodeUri: code/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.8
       Events:
         GetFloodRisk:
           Type: Api
