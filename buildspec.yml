@@ -2,12 +2,12 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.9
+      python: 3.8
   build:
     commands:
       - pip install --upgrade pip
       - pip install pipenv
-      - pipenv lock -r > requirements.txt
+      # - pipenv lock -r > requirements.txt
       - pip install -r requirements.txt -t code/
       - export BUCKET=bolius-digital-ml-model-containers
       - aws cloudformation package --template-file template.yml --s3-bucket $BUCKET --output-template-file outputtemplate.yml
