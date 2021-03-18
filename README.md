@@ -88,9 +88,9 @@ presents this model as a webpage.
 
 [kortforsyningen]: https://download.kortforsyningen.dk/content/geodataprodukter
 
-[dataforsyningen] : https://dataforsyningen.dk/
+[dataforsyningen]: https://dataforsyningen.dk/
 
-[datafordeler] : https://datafordeler.dk/
+[datafordeler]: https://datafordeler.dk/
 
 [miljoegis]: https://www.klimatilpasning.dk/kommuner/kortlaegning/data-til-kortlaegning/
 
