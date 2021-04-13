@@ -1,16 +1,8 @@
 import unittest
 import requests
-from code.lib import (
-    address_to_house_data,
-    bbr_id_to_house_data,
-    bounding_box,
-    get_basement_response,
-    get_satelite_img,
-)
+from code.lib import bounding_box
 import os
-from os import path
 
-from PIL import Image
 
 # Test class for checking the service providers we use for the calculator
 # Test parameters are chosen based on values that are know to work,
@@ -65,7 +57,7 @@ class TestServices(unittest.TestCase):
             "https://apps.conzoom.eu/api/v1/values/dk/unit/",
             headers={"authorization": f"Basic {os.environ['GEO_KEY']}"},
             params={
-                "where": f"acadr_bbrid=40eb1f85-9c53-4581-e044-0003ba298018",
+                "where": "acadr_bbrid=40eb1f85-9c53-4581-e044-0003ba298018",
                 "vars": "bld_area_basement",
             },
         )
